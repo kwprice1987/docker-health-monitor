@@ -1,0 +1,33 @@
+name: Docker Health Monitor CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Run Docker monitoring tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Verify Docker availability
+        run: |
+          docker version
+          docker info
+
+      - name: Validate Bash syntax
+        run: |
+          bash -n scripts/check-container.sh
+          bash -n tests/test-monitor.sh
+
+      - name: Run automated tests
+        run: bash tests/test-monitor.sh
